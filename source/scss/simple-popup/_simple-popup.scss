@@ -1,0 +1,51 @@
+.simple-popup {
+  background-color: $tundora-grey;
+  min-height: 300px;
+  padding: rem(15px) rem(20px);
+  z-index: 9999999;
+  overflow: hidden;
+  color: $white;
+  position: relative;
+  width: 300px;
+  box-shadow: 0 3px 9px 0 rgba(0, 0, 0, 0.4);
+  display: none;
+  //position: fixed; // should be set in the theme
+  //left: 20px;  // should be set in the theme
+  //bottom: 4%;  // should be set in the theme
+
+  &__close {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    cursor: pointer;
+    padding: rem(5px);
+    transition: color $animation-time ease;
+  }
+
+  &__title {
+    font-size: rem(22px);
+    color: $white;
+  }
+
+  &__content {
+    color: $white;
+    font-size: rem(14px);
+  }
+
+  &__button {
+    color: $black;
+    background: $white;
+    display: inline-block;
+    padding: rem(10px) rem(30px);
+    text-decoration: none;
+    margin-top: rem(20px);
+    cursor: pointer;
+    text-transform: uppercase;
+
+    &:hover {
+      color: $black;
+      box-shadow: 0 3px 9px 0 rgba(0, 0, 0, 0.4);
+    }
+  }
+
+}

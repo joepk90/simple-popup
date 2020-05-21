@@ -1,28 +1,11 @@
 {
     "name": "supadu/simple_popup",
-    "type": "project",
+    "type": "library",
     "authors": [
         {
             "name": "Supadu",
             "email": "notifications@supadu.com"
         }
     ],
-    "repositories": [
-        {
-            "type": "vcs",
-            "url":  "git@bitbucket.org:supadu/php-utilities.git"
-        }
-    ],
-    "require": {
-        "php": ">=5.4",
-        "supadu/php_utilities": "1.0.2"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "~4.6"
-    },
-    "autoload": {
-        "classmap": [
-            "Simple_Popup"
-        ]
-    }
+    "require": {}
 }

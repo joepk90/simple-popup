@@ -17,6 +17,3 @@ function simple_popup_dependency_url( $path = '' ) {
 
     return $url;
 }
-
-// Composer Includes
-require_once __DIR__ . '../vendor/autoload.php';

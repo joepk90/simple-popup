@@ -2,8 +2,11 @@
 
 if( !defined( 'ABSPATH' ) ) exit;
 
+require __DIR__ . '/../vendor/autoload.php';
+
 require_once __DIR__ . '/functions.php';
 
+use ArrayHelpers\Arr;
 
 /**
  * Class Simple_Popup
@@ -22,26 +25,27 @@ class Simple_Popup {
     public function __construct($data)
     {
         $this->data = $data;
-        $this->utlilties = new PHP_Utilities();
+        $this->parent_class = 'simple-popup';
     }
 
     public function get_modifier_class() {
 
-        $modifier = $this->utlilties->get_array_element('modifier-class',  $this->data);
+        $modifiers = Arr::get($this->data, 'modifiers');
 
-        if ($modifier === null) return '';
+        if ($modifiers === null) return '';
 
-        return $modifier;
+        $prefix = ' ' . $this->parent_class . '--'; // ' simple-popup__'
+        if (is_array($modifiers)) {
+            return $prefix . implode($prefix, $modifiers);
+        }
+
+        return $prefix . $modifiers;
 
     }
 
     public function get_js_event_class() {
 
-        $js_event_class = $this->utlilties->get_array_element('js-event-class',  $this->data);
-
-        if ($js_event_class === null) return 'js-set-cookie';
-
-        return $js_event_class;
+        return 'js-simple-popup-event';
 
     }
 
@@ -59,7 +63,7 @@ class Simple_Popup {
 
     public function render_title() {
 
-        $title = $this->utlilties->get_array_element('title',  $this->data);
+        $title =  Arr::get($this->data, 'title');
 
         if ($title === null) return '';
 
@@ -83,7 +87,7 @@ class Simple_Popup {
 
     public function render_button() {
 
-        $button_text = $this->utlilties->get_array_element('button-text',  $this->data);
+        $button_text = Arr::get($this->data, 'button-text',  );
 
         if ($button_text === null) return '';
 
@@ -96,13 +100,59 @@ class Simple_Popup {
         <?php return ob_get_clean();
     }
 
-    public function render_popup($content) {
+    public function get_custom_properties() {
 
-        $modifier_class = $this->get_modifier_class();
+        // TODO add cookie date/timestamp...
+
+        $custom_cookie = Arr::get($this->data, 'custom-cookie');
+        $popup_id = $this->get_popup_id();
+
+        // if no custom cookie data provided or popup id, return
+        if ($custom_cookie === null) return null;
+        if ($popup_id === null) return '';
+
+        $custom_cookie_name = Arr::get($custom_cookie, 'name');
+        $custom_cookie_value = Arr::get($custom_cookie, 'value');
+
+        if ($custom_cookie_name === null || $custom_cookie_value === null) return null;
+
+        $popupOptions = new stdClass();
+        $popupOptions->customPopupId = $popup_id;
+        $popupOptions->customCookieName = $custom_cookie_name;
+        $popupOptions->customCookieValue = $custom_cookie_value;
+
+        return $popupOptions;
+
+    }
+
+    public function get_popup_attributes() {
+
+        $custom_props = $this->get_custom_properties();
+
+        if ($custom_props === null) return '';
+
+        return $custom_props;
+
+    }
+
+    public function get_popup_id() {
+
+        $custom_popup_id = Arr::get($this->data, 'custom-popup-id');
+
+        if ($custom_popup_id === null) return 'simple-popup';
+
+        return $custom_popup_id;
+
+    }
+
+    public function render_popup($content) {
 
         ob_start(); ?>
 
-        <div class="simple-popup <?php echo $modifier_class; ?> js-simple-popup">
+        <div class="<?php echo $this->parent_class; ?> <?php echo $this->get_modifier_class(); ?> js-simple-popup"
+             data-popup-id="<?php echo $this->get_popup_id(); ?>"
+             data-popup-atts='<?php echo json_encode($this->get_popup_attributes()); ?>'
+        >
 
             <?php echo $this->render_close_close_button(); ?>
             <?php echo $this->render_title(); ?>
@@ -115,22 +165,46 @@ class Simple_Popup {
 
     }
 
-    static public function enqueue_scripts() {
+    public function handle_inline_event() {
 
-        // TODO this will need to change if converted to a Composer dependency
-        // TODO enqueue cookie-js as separate script, make optional include (maybe the theme already includes it...)
+        $popup_id = $this->get_popup_id();
+        $popupOptions = new stdClass();
+        $popupOptions->customPopupId = $popup_id;
 
-        add_action( 'wp_enqueue_scripts', 'simple_popup_enqueue_scripts' );
+        return 'new SimplePopup(' . json_encode($popupOptions) . ').customInlineEvent(event);';
 
-        function simple_popup_enqueue_scripts() {
+    }
 
-            wp_enqueue_style( 'simple-popup', simple_popup_dependency_url( 'includes/css/style.css' ), array(), SIMPLE_POPUP_DEPENDENCY_VERSION, 'all' );
+    static public function enqueue_popup_styles() {
+            wp_enqueue_style( 'simple-popup', simple_popup_dependency_url( '/includes/css/style.css' ), array(), SIMPLE_POPUP_DEPENDENCY_VERSION, 'all' );
+    }
 
-            wp_enqueue_script( 'simple-popup', simple_popup_dependency_url( 'includes/js/all.min.js' ), array( 'jquery' ), SIMPLE_POPUP_DEPENDENCY_VERSION, true );
+    static public function enqueue_cookie_scripts() {
+        wp_enqueue_script( 'simple-popup-cookie', simple_popup_dependency_url( '/includes/js/js.cookie.js' ), array(), SIMPLE_POPUP_DEPENDENCY_VERSION, true );
+    }
 
+    static public function enqueue_popup_scripts($dependencies = null) {
 
+        $dependencies_array = array( 'jquery' );
 
+        if ($dependencies !== null) {
+            $dependencies_array[] = $dependencies;
         }
+
+        wp_enqueue_script( 'simple-popup', simple_popup_dependency_url( '/includes/js/all.min.js' ), $dependencies, SIMPLE_POPUP_DEPENDENCY_VERSION, true );
+    }
+
+    static public function enqueue_assets() {
+
+        add_action( 'wp_enqueue_scripts', function () {
+
+            // static methods created for each include so files can be optionally not included
+
+            Simple_Popup::enqueue_popup_styles();
+            Simple_Popup::enqueue_cookie_scripts();
+            Simple_Popup::enqueue_popup_scripts('simple-popup-cookie');
+
+        }, 1);
 
     }
 

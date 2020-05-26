@@ -1,22 +1,14 @@
 (function($) { // reference query
     $(function() { // shorthand for onLoad()
 
-        // ['button', 'close']
-        // var options = {
-            // 'jsPopupSelector'
-            // 'jsEventClass': '',
-            //   'events': [{
-            // 'element': 'button',
-            // 'function': function()
-            // }],
-            // 'cookieData': {
-            //     name: 'wipf-and-stock',
-            //     value: "cookie-privacy-policy"
-            // }
-        // };
+        var popups = $('.js-simple-popup');
 
-        var $simplePopup = new SimplePopup({});
-        $simplePopup.init();
+        popups.each(function (index, popup) {
+
+            var $simplePopup = new SimplePopup({"popup": popup});
+            $simplePopup.init();
+
+        });
 
 
     });

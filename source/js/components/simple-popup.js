@@ -2,20 +2,60 @@
  * Class: SupapressCart
  */
 
+// TODO this is going to pollute the global scope.
+// TODO I might be better to create a an global object all Supadu dependencies sit under (supaduDependencies.SimplePopup)?
 var SimplePopup = {};
 
 (function($) { // reference jquery
 
         var defaultCookie = {
             name: 'simple-popup-cookie',
-            value: "cookie-privacy-policy"
+            value: "simple-popup-cookie"
         };
 
         SimplePopup = function (options)  {
             this.options = options;
-            this.popUp = this.options.jsPopupSelector !== undefined ? $(this.options.jsPopupSelector) : $('.js-simple-popup');
-            this.jsEventClass = this.options.jsEventClass !== undefined ? this.options.jsEventClass : 'js-set-cookie';
-            this.cookieData = this.options.cookieData !== undefined ? this.options.cookieData : defaultCookie;
+
+            this.constructor = function () {
+                this.popUp = this.getPopup();
+                this.popupAtts = this.getPopupAttributes();
+                this.cookieData = this.getCookieData();
+                this.jsEventClass = 'js-simple-popup-event';
+            };
+
+            this.getPopup = function () {
+
+                if (this.options.popup !== undefined) {
+
+                    // default behaviour: popup element passed on popup instantiated on page load
+                    return $(this.options.popup);
+
+                } else if (this.options.customPopupId !== undefined ) {
+
+                    // custom behaviour: custom target option used to target specific popup (logic used in conjunction with the customInlineEvent method)
+                    return $(".js-simple-popup[data-popup-id='" + this.options.customPopupId + "']");
+
+                }
+
+                return null;
+
+            };
+
+            this.getPopupAttributes = function () {
+
+                if (this.popUp === null) return null;
+
+                return this.popUp.data('popupAtts');
+            };
+
+            this.getCookieData = function () {
+
+                return {
+                    name: this.popupAtts.customCookieName !== undefined ? this.popupAtts.customCookieName : defaultCookie.name,
+                    value: this.popupAtts.customCookieValue !== undefined ? this.popupAtts.customCookieValue : defaultCookie.value
+                };
+
+            };
 
             this.getCookie = function() {
 
@@ -36,15 +76,30 @@ var SimplePopup = {};
                 this.popUp.show();
             };
 
-            this.hidePopup = function() {
-                this.popUp.hide();
+            this.hidePopup = function(e) {
+                $(e.target).closest(this.popUp).hide();
             };
 
-            this.defaultClickEvents = function () {
+            this.defaultCloseEvent = function(e) {
+                this.hidePopup(e);
+            };
 
-                // use default events
+            this.defaultSubmitEvent = function (e) {
+
                 this.setCookie();
-                this.hidePopup();
+                this.hidePopup(e);
+
+            };
+
+            this.customInlineEvent = function (e) {
+
+                // customInlineEvent is called Simple_Popup PHP class method: handle_inline_event
+
+                e = e || window.event;
+
+                e.preventDefault();
+
+                this.defaultSubmitEvent(e);
 
             };
 
@@ -54,35 +109,19 @@ var SimplePopup = {};
 
                 $(this.popUp).on('click', function(e) {
 
-                    e.preventDefault();
-
                     var $element = $(e.target);
 
                     if ($element.hasClass($simplePopup.jsEventClass) === false) return;
 
-                    // TODO merge in custom events
-                    var defaultEvents = [
-                        {
-                            element: 'button',
-                            function: $simplePopup.defaultClickEvents()
-                        },
-                        {
-                            element: 'close',
-                            function: $simplePopup.defaultClickEvents()
-                        }
-                    ];
+                    if ($element.data('element') === 'button') {
 
-                    var events = $simplePopup.options.events !== undefined ? $simplePopup.options.events : defaultEvents;
+                        $simplePopup.defaultSubmitEvent(e);
 
-                    $(events).each(function (key, event) {
+                    } else if($element.data('element') === 'close') {
 
-                        if ($element.data('element') === event.element) {
+                        $simplePopup.defaultCloseEvent(e);
 
-                            // if custom override function is defined, use custom override function
-                            event.function();
-                        }
-
-                    });
+                    }
 
                 });
 
@@ -96,6 +135,8 @@ var SimplePopup = {};
                 this.displayPopup();
                 this.setupEvents();
             };
+
+            this.constructor(options); // TODO this wrong - Work out a better way of calling constructor (refactor to ES6?)
         };
 
 })(jQuery);

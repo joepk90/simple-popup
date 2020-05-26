@@ -9,9 +9,6 @@
   width: 300px;
   box-shadow: 0 3px 9px 0 rgba(0, 0, 0, 0.4);
   display: none;
-  //position: fixed; // should be set in the theme
-  //left: 20px;  // should be set in the theme
-  //bottom: 4%;  // should be set in the theme
 
   &__close {
     position: absolute;
@@ -46,6 +43,18 @@
       color: $black;
       box-shadow: 0 3px 9px 0 rgba(0, 0, 0, 0.4);
     }
+  }
+
+  &--bottom-left {
+    position: fixed;
+    left: 20px;
+    bottom: 4%;
+  }
+
+  &--bottom-right {
+    position: fixed;
+    right: 20px;
+    bottom: 4%;
   }
 
 }

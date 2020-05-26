@@ -17,7 +17,7 @@ var gulp = require('gulp'),
     svgstore = require('gulp-svgstore'),
     svgfallback = require('gulp-svgfallback'),
     amdOptimize = require('gulp-es6-amd'),
-    browserSync = require('browser-sync').create(),
+    // browserSync = require('browser-sync').create(),
 
     basepaths = {
         src: 'source',
@@ -177,11 +177,11 @@ gulp.task('svg', function() {
  */
 gulp.task('serve', ['styles', 'scripts', 'vendor-scripts'], function() {
 
-    browserSync.init({
-        host: '217.138.40.26',
-        browser: "google chrome",
-        open: true,
-    });
+    // browserSync.init({
+    //     host: '217.138.40.26',
+    //     browser: "google chrome",
+    //     open: true,
+    // });
 
     gulp.watch(paths.css.src + '/**/*.scss', ['styles']);
     gulp.watch(paths.js.src + '/**/*.js', ['scripts']);

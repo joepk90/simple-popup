@@ -2,7 +2,7 @@
 
 if( !defined( 'ABSPATH' ) ) exit;
 
-require __DIR__ . '/../vendor/autoload.php';
+//require __DIR__ . '/../vendor/autoload.php'; // useful for dependency development
 
 require_once __DIR__ . '/functions.php';
 

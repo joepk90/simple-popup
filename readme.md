@@ -20,64 +20,65 @@ Simple_Popup::enqueue_assets();
 ### Basic Popup
 To create the default popup add the following code to your project:
 ```sh
-    $basic_popup_data = array(
-        'title' => 'Simple Popup Title',
-        'button-text' => 'Click Me',
-        'modifiers' => array(
-            'bottom-right'
-        )
-    );
+$basic_popup_data = array(
+    'title' => 'Simple Popup Title',
+    'button-text' => 'Click Me',
+    'modifiers' => array(
+        'bottom-right'
+    )
+);
 
-    $basic_cookie_popup = new Simple_Popup($basic_popup_data);
-    echo $basic_cookie_popup->render_popup('Default Simple Popup Content');
+$basic_cookie_popup = new Simple_Popup($basic_popup_data);
+echo $basic_cookie_popup->render_popup('Default Simple Popup Content');
 ```
 
 ### Custom Popup
 To create the custom popup add the following code to your project:
 ```sh
-    $custom_popup_data = array(
-        'title' => 'Title',
-        'button-text' => 'Click Me',
-        'modifiers' => array(
-            'bottom-left'
-        ),
-        'custom-popup-id' => 'upt-gdpr',
-        'custom-cookie' => array(
-            'name' => 'custom-cookie-name',
-            'value' => 'custom-cookie-value',
-        )
-    );
+$custom_popup_data = array(
+    'title' => 'Title',
+    'button-text' => 'Click Me',
+    'modifiers' => array(
+        'bottom-left'
+    ),
+    'custom-popup-id' => 'upt-gdpr',
+    'custom-cookie' => array(
+        'name' => 'custom-cookie-name',
+        'value' => 'custom-cookie-value',
+    )
+);
 
-    $custom_cookie_popup = new Simple_Popup($custom_popup_data);
-    echo $custom_cookie_popup->render_popup('Custom Simple Popup Content');
+$custom_cookie_popup = new Simple_Popup($custom_popup_data);
+echo $custom_cookie_popup->render_popup('Custom Simple Popup Content');
 ```
 
 ### Custom Popup with Custom Event
 To create the default popup with a custom event option to set the cookie, add the following code to your project:
 ```sh
-    $custom_popup_data = array(
-        'title' => 'Title',
-        'button-text' => 'Click Me',
-        'modifiers' => array(
-            'bottom-left'
-        ),
-        'custom-popup-id' => 'custom-event-cookie',
-        'custom-cookie' => array(
-            'name' => 'custom-event-cookie-name',
-            'value' => 'custom-event-cookie-value',
-        )
-    );
+$custom_popup_data = array(
+    'title' => 'Title',
+    'button-text' => 'Click Me',
+    'modifiers' => array(
+        'bottom-left'
+    ),
+    'custom-popup-id' => 'custom-event-cookie',
+    'custom-cookie' => array(
+        'name' => 'custom-event-cookie-name',
+        'value' => 'custom-event-cookie-value',
+    )
+);
 
-    ob_start(); ?>
+$custom_cookie_popup = new Simple_Popup($custom_popup_data);
+
+ob_start(); ?>
 
     <form onsubmit='<?php echo $custom_cookie_popup->handle_inline_event(); ?>'>
         <input type="submit" value="Submit">
     </form>
 
-    <?php $content = ob_get_clean();
+<?php $content = ob_get_clean();
 
-    $custom_cookie_popup = new Simple_Popup($custom_popup_data);
-    echo $custom_cookie_popup->render_popup('Custom Simple Popup Content with custom event');
+echo $custom_cookie_popup->render_popup($content);
 ```
 
 ### CSS Modifiers

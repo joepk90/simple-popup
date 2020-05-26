@@ -1,6 +1,7 @@
 {
     "name": "supadu/simple_popup",
     "type": "library",
+    "version": "1.0.5",
     "authors": [
         {
             "name": "Supadu",

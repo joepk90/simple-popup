@@ -108,7 +108,6 @@ gulp.task('hint', function() {
 gulp.task('scripts', ['clean-scripts', 'hint' ], function () {
 
     return gulp.src([
-        basepaths.node + '/js-cookie/src/js.cookie.js',
         paths.js.src + '/**/*.js'
     ], {base: requireConfig.baseUrl})
         .pipe(sourcemaps.init())
@@ -128,6 +127,21 @@ gulp.task('scripts', ['clean-scripts', 'hint' ], function () {
         .pipe(gulp.dest(paths.js.dest))
         // .pipe(browserSync.stream({match: '**/*.js'}));
 
+});
+
+/*
+  Scripts - Concat and Uglify
+*/
+gulp.task('vendor-scripts', function () {
+
+    return gulp.src([
+        basepaths.node + '/js-cookie/src/js.cookie.js'
+    ], )
+        .on('error', console.log)
+        .pipe(amdOptimize(requireConfig, options))
+        .pipe(uglify())
+        .pipe(gulp.dest(paths.js.dest))
+        // .pipe(browserSync.stream({match: '**/*.js'}));
 
 });
 
@@ -161,7 +175,7 @@ gulp.task('svg', function() {
 /*
  Default and Watch Task
  */
-gulp.task('serve', ['styles', 'scripts'], function() {
+gulp.task('serve', ['styles', 'scripts', 'vendor-scripts'], function() {
 
     browserSync.init({
         host: '217.138.40.26',
